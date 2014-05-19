@@ -16,6 +16,8 @@
 % move author affiliations around
 \usepackage{amsaddr}
 \usepackage{amsfonts}
+\usepackage{amsmath}% 
+\usepackage{calc}%     needed for the width/height calculations
 
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{lemma}[theorem]{Lemma}
@@ -44,6 +46,21 @@
   }%
 }
 
+% Variable definitions
+\def\T{$\mathcal{T}$}
+\def\TSolver{$\mathcal{T}$-\emph{solver}}
+\def\sat{\texttt{SAT}}
+\def\unsat{\texttt{UNSAT}}
+% \newcommand{\eqdef}{\overset{\mathrm{def}}{=\joinrel=}}
+
+
+% \newcommand*{\MyDef}{\mathrm{def}}
+% \newcommand*{\eqdefU}{\ensuremath{\mathop{\overset{\MyDef}{=}}}}% Unscaled version
+% \newcommand*{\eqdef}{\mathop{\overset{\MyDef}{\resizebox{\widthof{\eqdefU}}{\heightof{=}}{=}}}}
+
+\newcommand\eqdef{\mathrel{\overset{\makebox[0pt]{\mbox{\normalfont\tiny\sffamily def}}}{=}}}
+
+
 \begin{document}
 
 \title[Satisfiability Modulo the Theory of Costs]{Satisfiability Modulo the Theory of Costs: Foundations and Applications}
@@ -64,10 +81,21 @@ Mauris non consectetur quam. Suspendisse in orci consectetur, dictum erat nec, v
 \section{Introduction}
 \section{SMT Solving}
 The \emph{Satisfiability Modulo Theories} (SMT($\mathcal{T}$)) problem is a decision problem for logic formulas under the background of a Theory $\mathcal{T}$, and can be seen as a constraint satisfaction problem.
-A tool which is able to solve an SMT($\mathcal{T}$) problem is further referred to as an SMT($\mathcal{T}$)-solver.
 A tool able to decide the satisfiability of sets of ground atomic formulas and their negations is referred to as a $\mathcal{T}$-\emph{solver}.
-\section{Satisfiability Modulo the Theory of Costs}
+If the input set of \T{}-literals $\mu$ is satisfiable under \T{}, then the \TSolver{} returns \sat{}.
+Additionally, the \TSolver{} can return a so-called \T{}-deduction clause. This can be used in early pruning, where the \T{}-deduction clause can be used in backjumping and learning.
+If the input set of \T{}-literals is not satisfiable under \T{}, then the \TSolver{} returns \unsat{} and the conflict clause consisting of the subset of \T{}-literals in $\mu$ which was found \T{}-unsatisfiable.
 
+A tool which is able to solve an SMT($\mathcal{T}$) problem is further referred to as an SMT($\mathcal{T}$)-solver.
+In a lazy SMT(\T{})-solver, the truth assignments for $\varphi$ are checked for \T{}-satisfiability.
+Usually, this is performed by a modified version of the DPLL algorithm.
+If a truth assignment $\mu$ is found where $\mu \models \varphi$, then $\mu$ is passed on to the \TSolver{}.
+If the \TSolver{} then returns \sat{}, the SMT(\T{})-solver found a solution.
+If not, then the \TSolver{} passes the \T{}-conflict clause $\neg\eta$ back to the learning mechanism of the DPLL algorithm. For more information on how lazy SMT(\T{}) solving works, please refer to \cite{Sebastiani07}.
+
+\section{Satisfiability Modulo the Theory of Costs}
+Cimatti et al.\ extend the SMT framework by adding a possibility of modelling cost functions.
+An SMT(\T{}) \emph{cost problem} is a pair $\langle \varphi, costs \rangle$, where $costs \eqdef \{cost^{i}\}^{M}_{i=1}$
 
 
 
@@ -191,7 +219,7 @@ each quotient group $G_{i+1}/G_{i}$ is abelian, the group $G$ is called
 \item Third item.
 \end{enumerate}
 
-Here is an example of a cite. See \cite{A}.
+Here is an example of a cite. See.
 
 \begin{theorem}
 This is an example of a theorem.
@@ -230,20 +258,7 @@ contained in a line through $0$ with irrational slope.
 \end{description}
 
 \bibliographystyle{amsplain}
-\begin{thebibliography}{10}
-
-\bibitem {A} T. Aoki, \textit{Calcul exponentiel des op\'erateurs
-microdifferentiels d'ordre infini.} I, Ann. Inst. Fourier (Grenoble)
-\textbf{33} (1983), 227--250.
-
-\bibitem {B} R. Brown, \textit{On a conjecture of Dirichlet},
-Amer. Math. Soc., Providence, RI, 1993.
-
-\bibitem {D} R. A. DeVore, \textit{Approximation of functions},
-Proc. Sympos. Appl. Math., vol. 36,
-Amer. Math. Soc., Providence, RI, 1986, pp. 34--56.
-
-\end{thebibliography}
+\bibliography{references}
 
 \end{document}
 
