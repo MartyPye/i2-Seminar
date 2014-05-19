@@ -15,6 +15,7 @@
 \usepackage{graphicx}
 % move author affiliations around
 \usepackage{amsaddr}
+\usepackage{amsfonts}
 
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{lemma}[theorem]{Lemma}
@@ -61,21 +62,14 @@ Mauris non consectetur quam. Suspendisse in orci consectetur, dictum erat nec, v
 \maketitle
 
 \section{Introduction}
-This is an example of a numbered first-level heading.
+\section{SMT Solving}
+The \emph{Satisfiability Modulo Theories} (SMT($\mathcal{T}$)) problem is a decision problem for logic formulas under the background of a Theory $\mathcal{T}$, and can be seen as a constraint satisfaction problem.
+A tool which is able to solve an SMT($\mathcal{T}$) problem is further referred to as an SMT($\mathcal{T}$)-solver.
+A tool able to decide the satisfiability of sets of ground atomic formulas and their negations is referred to as a $\mathcal{T}$-\emph{solver}.
+\section{Satisfiability Modulo the Theory of Costs}
 
-\begin{lemma}
-Let $f, g\in  A(X)$ and let $E$, $F$ be cozero
-sets in $X$.
-\begin{enumerate}
-\item If $f$ is $E$-regular and $F\subseteq E$, then $f$ is $F$-regular.
 
-\item If $f$ is $E$-regular and $F$-regular, then $f$ is $E\cup
-F$-regular.
 
-\item If $f(x)\ge c>0$ for all $x\in E$, then $f$ is $E$-regular.
-
-\end{enumerate}
-\end{lemma}
 
 The following is an example of a proof.
 
