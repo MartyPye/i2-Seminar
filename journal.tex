@@ -48,9 +48,12 @@
 
 % Variable definitions
 \def\T{$\mathcal{T}$}
+\def\C{$\mathcal{C}$}
 \def\TSolver{$\mathcal{T}$-\emph{solver}}
 \def\sat{\texttt{SAT}}
 \def\unsat{\texttt{UNSAT}}
+\def\BC{\sf BC \rm}
+\def\IC{\sf IC \rm}
 % \newcommand{\eqdef}{\overset{\mathrm{def}}{=\joinrel=}}
 
 
@@ -94,168 +97,88 @@ If the \TSolver{} then returns \sat{}, the SMT(\T{})-solver found a solution.
 If not, then the \TSolver{} passes the \T{}-conflict clause $\neg\eta$ back to the learning mechanism of the DPLL algorithm. For more information on how lazy SMT(\T{}) solving works, please refer to \cite{Sebastiani07}.
 
 \section{Satisfiability Modulo the Theory of Costs}
-Cimatti et al.\ extend the SMT framework by adding a possibility of modelling cost functions.
-An SMT(\T{}) \emph{cost problem} is a pair $\langle \varphi, costs \rangle$, where $costs \eqdef \{cost^{i}\}^{M}_{i=1}$
+Cimatti et al.\ extend the SMT framework by adding a possibility of modelling cost functions \cite{Cimatti10}.
+An SMT(\T{}) \emph{cost problem} is a pair $\langle \varphi, costs \rangle$, where $costs \eqdef \{cost^{i}\}^{M}_{i=1}$.
+$\varphi$ is a boolean formula over ground \T{}-atoms and atoms of the form ($cost^{i} \leq c$), $c$ being some integer value.
 
-
-
-The following is an example of a proof.
-
-\begin{proof} Set $j(\nu)=\max(I\backslash a(\nu))-1$. Then we have
-\[
-\sum_{i\notin a(\nu)}t_i\sim t_{j(\nu)+1}
-  =\prod^{j(\nu)}_{j=0}(t_{j+1}/t_j).
-\]
-Hence we have
+In the array $costs$, each $cost^{i}$ is a boolean cost function in the form
 \begin{equation}
-\begin{split}
-\prod_\nu\biggl(\sum_{i\notin
-  a(\nu)}t_i\biggr)^{\abs{a(\nu-1)}-\abs{a(\nu)}}
-&\sim\prod_\nu\prod^{j(\nu)}_{j=0}
-  (t_{j+1}/t_j)^{\abs{a(\nu-1)}-\abs{a(\nu)}}\\
-&=\prod_{j\ge 0}(t_{j+1}/t_j)^{
-  \sum_{j(\nu)\ge j}(\abs{a(\nu-1)}-\abs{a(\nu)})}.
-\end{split}
+\label{eq:costsGeneral}
+	cost^{i} = \sum\limits_{j=1}^{N_{i}} ite(\psi^{i}_{j},c^{i}_{j1},c^{i}_{j2})
 \end{equation}
-By definition, we have $a(\nu(j))\supset c(j)$. Hence, $\abs{c(j)}=n-j$
-implies (5.4). If $c(j)\notin a$, $a(\nu(j))c(j)$ and hence
-we have (5.5).
-\end{proof}
-
-\begin{quotation}
-This is an example of an `extract'. The magnetization $M_0$ of the Ising
-model is related to the local state probability $P(a):M_0=P(1)-P(-1)$.
-The equivalences are shown in Table~\ref{eqtable}.
-\end{quotation}
-
-\begin{table}[ht]
-\caption{}\label{eqtable}
-\renewcommand\arraystretch{1.5}
-\noindent\[
-\begin{array}{|c|c|c|}
-\hline
-&{-\infty}&{+\infty}\\
-\hline
-{f_+(x,k)}&e^{\sqrt{-1}kx}+s_{12}(k)e^{-\sqrt{-1}kx}&s_{11}(k)e^
-{\sqrt{-1}kx}\\
-\hline
-{f_-(x,k)}&s_{22}(k)e^{-\sqrt{-1}kx}&e^{-\sqrt{-1}kx}+s_{21}(k)e^{\sqrt
-{-1}kx}\\
-\hline
-\end{array}
-\]
-\end{table}
-
-\begin{definition}
-This is an example of a `definition' element.
-For $f\in A(X)$, we define
-\begin{equation}
-\mathcal{Z} (f)=\{E\in Z[X]: \text{$f$ is $E^c$-regular}\}.
-\end{equation}
-\end{definition}
-
-\begin{remark}
-This is an example of a `remark' element.
-For $f\in A(X)$, we define
-\begin{equation}
-\mathcal{Z} (f)=\{E\in Z[X]: \text{$f$ is $E^c$-regular}\}.
-\end{equation}
-\end{remark}
-
-\begin{example}
-This is an example of an `example' element.
-For $f\in A(X)$, we define
-\begin{equation}
-\mathcal{Z} (f)=\{E\in Z[X]: \text{$f$ is $E^c$-regular}\}.
-\end{equation}
-\end{example}
-
-\begin{xca}
-This is an example of the \texttt{xca} environment. This environment is
-used for exercises which occur within a section.
-\end{xca}
-
-The following is an example of a numbered list.
-
-\begin{enumerate}
-\item First item.
-In the case where in $G$ there is a sequence of subgroups
+where $ite$ (if-then-else) is a function defined as
 \[
-G = G_0, G_1, G_2, \dots, G_k = e
+    ite(A,c_{1},c_{2}) = 
+	\begin{cases}
+    	c_{1},& \text{if } A = 1\\
+    	c_{2},& \text{otherwise}
+	\end{cases}
 \]
-such that each is an invariant subgroup of $G_i$.
-
-\item Second item.
-Its action on an arbitrary element $X = \lambda^\alpha X_\alpha$ has the
-form
-\begin{equation}\label{eq:action}
-[e^\alpha X_\alpha, X] = e^\alpha \lambda^\beta
-[X_\alpha X_\beta] = e^\alpha c^\gamma_{\alpha \beta}
- \lambda^\beta X_\gamma,
+and $\psi_{j}^{i}$ is a formula in \T{}. From here onwards, problems $\langle \varphi, costs \rangle$ are restricted s.t.
+\begin{equation}
+\label{eq:costsRestricted}
+	cost^{i} = \sum\limits_{j=1}^{N_{i}} ite(A^{i}_{j},c^{i}_{j},0)
 \end{equation}
+where $A_{j}^{i}$ is a boolean literal and $0 < c^{i}_{j} \leq c^{i}_{j+1}$.
+Passing from ~\eqref{eq:costsGeneral} to ~\eqref{eq:costsRestricted} is straightforward and possible in linear time. (SHOULD I ADD THE PROOF HERE?)
 
-\begin{enumerate}
-\item First subitem.
-\[
-- 2\psi_2(e) =  c_{\alpha \gamma}^\delta c_{\beta \delta}^\gamma
-e^\alpha e^\beta.
-\]
+At this point it is important to note that ~\eqref{eq:costsRestricted} can be encoded in the theory of linear arithmetic over integers ($\mathcal{LA}(\mathbb{Z})$) and therefore any $\langle \varphi, costs \rangle$ problem into the following ground \T{}$\cup \mathcal{LA}(\mathbb{Z})$-formula.
+\begin{equation}
+	\label{eq:encodingSMTIntoLA}
+	\langle \varphi, costs \rangle \equiv \varphi \bigwedge\limits_{i=1}^{M}\left(\left(c^{i} = \sum\limits_{j=1}^{N_{i}}c_{ij}\right) \land \bigwedge\limits_{j=1}^{N_{i}}\left(\left(A^{i}_{j} \to c_{ij} = c^{i}_{j}\right) \land \left(\neg A^{i}_{j} \to c_{ij} = 0\right)\right)\right)
+\end{equation}
+This could then be solved by a linear arithmetic solver, such as \cite{dutertre06}, but this is extremely inefficient. The following theory of costs is more efficient to solve.
 
-\item Second subitem.
-\begin{enumerate}
-\item First subsubitem.
-In the case where in $G$ there is a sequence of subgroups
-\[
-G = G_0, G_1, G_2, \ldots, G_k = e
-\]
-such that each subgroup $G_{i+1}$ is an invariant subgroup of $G_i$ and
-each quotient group $G_{i+1}/G_{i}$ is abelian, the group $G$ is called
-\textit{solvable}.
-
-\item Second subsubitem.
-\end{enumerate}
-\item Third subitem.
-\end{enumerate}
-\item Third item.
-\end{enumerate}
-
-Here is an example of a cite. See.
-
-\begin{theorem}
-This is an example of a theorem.
-\end{theorem}
-
-\begin{theorem}[Marcus Theorem]
-This is an example of a theorem with a parenthetical note in the
-heading.
-\end{theorem}
-
-\section{Some more list types}
-This is an example of a bulleted list.
-
+\section{A Theory of Costs}
+Cimatti et al.\ introduced a theory of costs $\mathcal{C}$, which allows for modelling multiple problems with $\mathcal{T} \cup \mathcal{C}$-formulas.
+\C{} is built up as follows:
 \begin{itemize}
-\item $\mathcal{J}_g$ of dimension $3g-3$;
-\item $\mathcal{E}^2_g=\{$Pryms of double covers of $C=\openbox$ with
-normalization of $C$ hyperelliptic of genus $g-1\}$ of dimension $2g$;
-\item $\mathcal{E}^2_{1,g-1}=\{$Pryms of double covers of
-$C=\openbox^H_{P^1}$ with $H$ hyperelliptic of genus $g-2\}$ of
-dimension $2g-1$;
-\item $\mathcal{P}^2_{t,g-t}$ for $2\le t\le g/2=\{$Pryms of double
-covers of $C=\openbox^{C'}_{C''}$ with $g(C')=t-1$ and $g(C'')=g-t-1\}$
-of dimension $3g-4$.
+  \item A set of $M$ variables $c^1,\ldots,c^M$. These are the output of the boolean cost functions $cost^1,\ldots,cost^M$.
+  \item A binary predicate \sf BC \rm (``bound cost'') s.t.\ $\BC{}(c^i,c) \eqdef (c^i \leq c)$ with $c^i$ being a cost variable and $c$ being an integer value.
+  \item A ternary predicate \IC{} (``incur cost'') s.t. $\IC{}(c^i,j,c^{i}_{j}) \eqdef c^{i}_{j}$ is added to $c^i$ as $j^{th}$ element in the sum ~\eqref{eq:costsRestricted}.
 \end{itemize}
 
-This is an example of a `description' list.
+This theory of costs allows for modelling domains which involve multiple costs $c^i$ and their constraints.
+At this point, we would like to introduce an example of an autonomous rover.
+Imagine a rover that can move around a $4\times4$ field of squares.
+A move from one square to a neighbouring square costs $20$ mAh.
+Now, we want to model this behaviour in boolean logic, so first we define some new boolean predicates:
 
-\begin{description}
-\item[Zero case] $\rho(\Phi) = \{0\}$.
+\begin{align*}
+  \operatorname{\sf p \rm}(x,y,t) &\eqdef \text{At time point $t$, rover is at }(x,y) \\
+  \operatorname{\sf move \rm}(x,y,x',y',t) &\eqdef \text{At time point $t$, rover moves from $(x,y)$ to $(x',y')$} \\
+  \operatorname{\sf nextTo \rm}(x,y,x',y') &\eqdef (x,y) \text{ is next to $(x',y')$}
+\end{align*}
+\\
+Second, we define some formulas which model the behaviour of the rover:
+\begin{enumerate}
+  \item At every point in time, the rover is somewhere on the field:
+  \begin{equation*}
+    \varphi_{position} \eqdef \bigwedge\limits_{t \in \{0,\ldots,n\}} \left(\bigvee\limits_{x,y \in \{0,\ldots,3\}} \operatorname{\sf p \rm}\left(x,y,t\right)\right)
+  \end{equation*}
 
-\item[Rational case] $\rho(\Phi) \ne \{0\}$ and $\rho(\Phi)$ is
-contained in a line through $0$ with rational slope.
+  \item At every point in time, the rover is max.\ on one square:
+  \begin{equation*}
+    \varphi_{noSplitPos} \eqdef \bigwedge_{\substack{t \in \{0,\ldots,n\} \\ x,y \in \{0,\ldots,3\}}} \left(\operatorname{\sf p \rm}\left(x,y,t\right) \rightarrow \bigwedge_{\substack{x',y' \in \{0,\ldots,3\} \\ x' \neq x \wedge y' \neq y}} \neg \operatorname{\sf p \rm}\left(x',y',t\right)\right)
+  \end{equation*}
 
-\item[Irrational case] $\rho(\Phi) \ne \{0\}$ and $\rho(\Phi)$ is
-contained in a line through $0$ with irrational slope.
-\end{description}
+  \item Between two time points, the rover either moves or stays on its current square:
+  \begin{equation*}
+    \varphi_{moveOrStay} \eqdef \bigwedge_{\substack{t \in \{0,\ldots,n-1\} \\ x,y,x',y' \in \{0,\ldots,3\} \\ x' \neq x \lor y' \neq y}} \left( \operatorname{\sf p \rm}\left(x,y,t\right) \land \operatorname{\sf p \rm}\left(x',y',t+1\right) \rightarrow \operatorname{\sf move \rm}\left(x,y,x',y',t\right)\right) 
+  \end{equation*}
+
+  \item The rover can only move to neighbouring field, i.e.\ neither jump nor move diagonally:
+  \begin{equation*}
+    \varphi_{validMove} \eqdef \bigwedge_{\substack{t \in \{0,\ldots,n-1\} \\ x,y,x',y' \in \{0,\ldots,3\}}} \left(\operatorname{\sf move \rm}\left(x,y,x',y',t\right) \rightarrow \operatorname{\sf nextTo \rm}\left(x,y,x',y'\right)\right)
+  \end{equation*}
+
+  \item Moving one square costs $20$ mAh of energy:
+  \begin{equation*}
+    \varphi_{batteryCost} \eqdef \bigwedge_{\substack{t \in \{0,\ldots,n-1\} \\ x,y,x',y' \in \{0,\ldots,3\}}} \left(\operatorname{\sf move \rm}\left(x,y,x',y',t\right) \rightarrow \IC{}\left(battery,t,20\right)\right)
+  \end{equation*}
+
+\end{enumerate}
+
 
 \bibliographystyle{amsplain}
 \bibliography{references}
