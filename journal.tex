@@ -66,122 +66,154 @@
 
 \begin{document}
 
-\title[Satisfiability Modulo the Theory of Costs]{Satisfiability Modulo the Theory of Costs: Foundations and Applications}
+  \title[Satisfiability Modulo the Theory of Costs]{Satisfiability Modulo the Theory of Costs: Foundations and Applications}
 
-%    Information for first author
-\author{Marty Pye}
-\address{RWTH Aachen University}
-\email[Marty Pye]{marty.pye@rwth-aachen.de}
+  %    Information for first author
+  \author{Marty Pye}
+  \address{RWTH Aachen University}
+  \email[Marty Pye]{marty.pye@rwth-aachen.de}
 
-\begin{abstract}
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam diam sapien, egestas at velit in, tempor malesuada turpis. Aenean eget rutrum sapien. Proin a blandit justo. Nulla fermentum placerat lacus eu tempus. Quisque nec orci eros. Nullam tempor ut lectus elementum blandit. In sed velit quis massa viverra pellentesque. Donec bibendum nibh molestie, volutpat lectus sed, eleifend nibh. Donec nec tellus justo. Vestibulum nec massa ac sapien porta ultrices.
+  \begin{abstract}
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam diam sapien, egestas at velit in, tempor malesuada turpis. Aenean eget rutrum sapien. Proin a blandit justo. Nulla fermentum placerat lacus eu tempus. Quisque nec orci eros. Nullam tempor ut lectus elementum blandit. In sed velit quis massa viverra pellentesque. Donec bibendum nibh molestie, volutpat lectus sed, eleifend nibh. Donec nec tellus justo. Vestibulum nec massa ac sapien porta ultrices.
 
-Mauris non consectetur quam. Suspendisse in orci consectetur, dictum erat nec, varius ante. Vivamus porta purus eget dictum dictum. Vivamus quis sem risus. Donec dictum tortor et odio tincidunt, non tincidunt nunc venenatis. Fusce nec lacus vel odio semper venenatis a sodales elit. Morbi tincidunt sit amet eros sed pharetra. Pellentesque varius pharetra ultrices. Pellentesque quam diam, blandit vel gravida in, vestibulum vel sapien. Quisque quam nibh, accumsan nec est placerat, eleifend vestibulum nulla. Cras a dapibus sapien, vel consequat urna. Cras bibendum fringilla mi dapibus tincidunt. Ut suscipit elit et risus porta, faucibus blandit ligula aliquet.
-\end{abstract}
+    Mauris non consectetur quam. Suspendisse in orci consectetur, dictum erat nec, varius ante. Vivamus porta purus eget dictum dictum. Vivamus quis sem risus. Donec dictum tortor et odio tincidunt, non tincidunt nunc venenatis. Fusce nec lacus vel odio semper venenatis a sodales elit. Morbi tincidunt sit amet eros sed pharetra. Pellentesque varius pharetra ultrices. Pellentesque quam diam, blandit vel gravida in, vestibulum vel sapien. Quisque quam nibh, accumsan nec est placerat, eleifend vestibulum nulla. Cras a dapibus sapien, vel consequat urna. Cras bibendum fringilla mi dapibus tincidunt. Ut suscipit elit et risus porta, faucibus blandit ligula aliquet.
+  \end{abstract}
 
-\maketitle
+  \maketitle
 
-\section{Introduction}
-\section{SMT Solving}
-The \emph{Satisfiability Modulo Theories} (SMT($\mathcal{T}$)) problem is a decision problem for logic formulas under the background of a Theory $\mathcal{T}$, and can be seen as a constraint satisfaction problem.
-A tool able to decide the satisfiability of sets of ground atomic formulas and their negations is referred to as a $\mathcal{T}$-\emph{solver}.
-If the input set of \T{}-literals $\mu$ is satisfiable under \T{}, then the \TSolver{} returns \sat{}.
-Additionally, the \TSolver{} can return a so-called \T{}-deduction clause. This can be used in early pruning, where the \T{}-deduction clause can be used in backjumping and learning.
-If the input set of \T{}-literals is not satisfiable under \T{}, then the \TSolver{} returns \unsat{} and the conflict clause consisting of the subset of \T{}-literals in $\mu$ which was found \T{}-unsatisfiable.
+  \section{Introduction}
+  \section{SMT Solving}
+    The \emph{Satisfiability Modulo Theories} (SMT($\mathcal{T}$)) problem is a decision problem for logic formulas under the background of a Theory $\mathcal{T}$, and can be seen as a constraint satisfaction problem.
+    A tool able to decide the satisfiability of sets of ground atomic formulas and their negations is referred to as a $\mathcal{T}$-\emph{solver}.
+    If the input set of \T{}-literals $\mu$ is satisfiable under \T{}, then the \TSolver{} returns \sat{}.
+    Additionally, the \TSolver{} can return a so-called \T{}-deduction clause. This can be used in early pruning, where the \T{}-deduction clause can be used in backjumping and learning.
+    If the input set of \T{}-literals is not satisfiable under \T{}, then the \TSolver{} returns \unsat{} and the conflict clause consisting of the subset of \T{}-literals in $\mu$ which was found \T{}-unsatisfiable.
 
-A tool which is able to solve an SMT($\mathcal{T}$) problem is further referred to as an SMT($\mathcal{T}$)-solver.
-In a lazy SMT(\T{})-solver, the truth assignments for $\varphi$ are checked for \T{}-satisfiability.
-Usually, this is performed by a modified version of the DPLL algorithm.
-If a truth assignment $\mu$ is found where $\mu \models \varphi$, then $\mu$ is passed on to the \TSolver{}.
-If the \TSolver{} then returns \sat{}, the SMT(\T{})-solver found a solution.
-If not, then the \TSolver{} passes the \T{}-conflict clause $\neg\eta$ back to the learning mechanism of the DPLL algorithm. For more information on how lazy SMT(\T{}) solving works, please refer to \cite{Sebastiani07}.
+    A tool which is able to solve an SMT($\mathcal{T}$) problem is further referred to as an SMT($\mathcal{T}$)-solver.
+    In a lazy SMT(\T{})-solver, the truth assignments for $\varphi$ are checked for \T{}-satisfiability.
+    Usually, this is performed by a modified version of the DPLL algorithm.
+    If a truth assignment $\mu$ is found where $\mu \models \varphi$, then $\mu$ is passed on to the \TSolver{}.
+    If the \TSolver{} then returns \sat{}, the SMT(\T{})-solver found a solution.
+    If not, then the \TSolver{} passes the \T{}-conflict clause $\neg\eta$ back to the learning mechanism of the DPLL algorithm. For more information on how lazy SMT(\T{}) solving works, please refer to \cite{Sebastiani07}.
 
-\section{Satisfiability Modulo the Theory of Costs}
-Cimatti et al.\ extend the SMT framework by adding a possibility of modelling cost functions \cite{Cimatti10}.
-An SMT(\T{}) \emph{cost problem} is a pair $\langle \varphi, costs \rangle$, where $costs \eqdef \{cost^{i}\}^{M}_{i=1}$.
-$\varphi$ is a boolean formula over ground \T{}-atoms and atoms of the form ($cost^{i} \leq c$), $c$ being some integer value.
+  \section{Satisfiability Modulo the Theory of Costs}
+    Cimatti et al.\ extend the SMT framework by adding a possibility of modelling cost functions \cite{Cimatti10}.
+    An SMT(\T{}) \emph{cost problem} is a pair $\langle \varphi, costs \rangle$, where $costs \eqdef \{cost^{i}\}^{M}_{i=1}$.
+    $\varphi$ is a boolean formula over ground \T{}-atoms and atoms of the form ($cost^{i} \leq c$), $c$ being some integer value.
 
-In the array $costs$, each $cost^{i}$ is a boolean cost function in the form
-\begin{equation}
-\label{eq:costsGeneral}
-	cost^{i} = \sum\limits_{j=1}^{N_{i}} ite(\psi^{i}_{j},c^{i}_{j1},c^{i}_{j2})
-\end{equation}
-where $ite$ (if-then-else) is a function defined as
-\[
-    ite(A,c_{1},c_{2}) = 
-	\begin{cases}
-    	c_{1},& \text{if } A = 1\\
-    	c_{2},& \text{otherwise}
-	\end{cases}
-\]
-and $\psi_{j}^{i}$ is a formula in \T{}. From here onwards, problems $\langle \varphi, costs \rangle$ are restricted s.t.
-\begin{equation}
-\label{eq:costsRestricted}
-	cost^{i} = \sum\limits_{j=1}^{N_{i}} ite(A^{i}_{j},c^{i}_{j},0)
-\end{equation}
-where $A_{j}^{i}$ is a boolean literal and $0 < c^{i}_{j} \leq c^{i}_{j+1}$.
-Passing from ~\eqref{eq:costsGeneral} to ~\eqref{eq:costsRestricted} is straightforward and possible in linear time. (SHOULD I ADD THE PROOF HERE?)
+    In the array $costs$, each $cost^{i}$ is a boolean cost function in the form
+    \begin{equation}
+      \label{eq:costsGeneral}
+    	cost^{i} = \sum\limits_{j=1}^{N_{i}} ite(\psi^{i}_{j},c^{i}_{j1},c^{i}_{j2})
+    \end{equation}
+    where $ite$ (if-then-else) is a function defined as
+    \[
+      ite(A,c_{1},c_{2}) = 
+    	\begin{cases}
+        c_{1},& \text{if } A = 1 \\
+        c_{2},& \text{otherwise}
+    	\end{cases}
+    \]
+    and $\psi_{j}^{i}$ is a formula in \T{}. From here onwards, problems $\langle \varphi, costs \rangle$ are restricted s.t.
+    \begin{equation}
+    \label{eq:costsRestricted}
+    	cost^{i} = \sum\limits_{j=1}^{N_{i}} ite(A^{i}_{j},c^{i}_{j},0)
+    \end{equation}
+    where $A_{j}^{i}$ is a boolean literal and $0 < c^{i}_{j} \leq c^{i}_{j+1}$.
+    Passing from ~\eqref{eq:costsGeneral} to ~\eqref{eq:costsRestricted} is straightforward and possible in linear time. (SHOULD I ADD THE PROOF HERE?)
 
-At this point it is important to note that ~\eqref{eq:costsRestricted} can be encoded in the theory of linear arithmetic over integers ($\mathcal{LA}(\mathbb{Z})$) and therefore any $\langle \varphi, costs \rangle$ problem into the following ground \T{}$\cup \mathcal{LA}(\mathbb{Z})$-formula.
-\begin{equation}
-	\label{eq:encodingSMTIntoLA}
-	\langle \varphi, costs \rangle \equiv \varphi \bigwedge\limits_{i=1}^{M}\left(\left(c^{i} = \sum\limits_{j=1}^{N_{i}}c_{ij}\right) \land \bigwedge\limits_{j=1}^{N_{i}}\left(\left(A^{i}_{j} \to c_{ij} = c^{i}_{j}\right) \land \left(\neg A^{i}_{j} \to c_{ij} = 0\right)\right)\right)
-\end{equation}
-This could then be solved by a linear arithmetic solver, such as \cite{dutertre06}, but this is extremely inefficient. The following theory of costs is more efficient to solve.
+    At this point it is important to note that ~\eqref{eq:costsRestricted} can be encoded in the theory of linear arithmetic over integers ($\mathcal{LA}(\mathbb{Z})$) and therefore any $\langle \varphi, costs \rangle$ problem into the following ground \T{}$\cup \mathcal{LA}(\mathbb{Z})$-formula.
+    \begin{equation}
+    	\label{eq:encodingSMTIntoLA}
+    	\langle \varphi, costs \rangle \equiv \varphi \bigwedge\limits_{i=1}^{M}\left(\left(c^{i} = \sum\limits_{j=1}^{N_{i}}c_{ij}\right) \land \bigwedge\limits_{j=1}^{N_{i}}\left(\left(A^{i}_{j} \to c_{ij} = c^{i}_{j}\right) \land \left(\neg A^{i}_{j} \to c_{ij} = 0\right)\right)\right)
+    \end{equation}
+    This could then be solved by a linear arithmetic solver, such as \cite{dutertre06}, but this is extremely inefficient. The following theory of costs is more efficient to solve.
 
-\section{A Theory of Costs}
-Cimatti et al.\ introduced a theory of costs $\mathcal{C}$, which allows for modelling multiple problems with $\mathcal{T} \cup \mathcal{C}$-formulas.
-\C{} is built up as follows:
-\begin{itemize}
-  \item A set of $M$ variables $c^1,\ldots,c^M$. These are the output of the boolean cost functions $cost^1,\ldots,cost^M$.
-  \item A binary predicate \sf BC \rm (``bound cost'') s.t.\ $\BC{}(c^i,c) \eqdef (c^i \leq c)$ with $c^i$ being a cost variable and $c$ being an integer value.
-  \item A ternary predicate \IC{} (``incur cost'') s.t. $\IC{}(c^i,j,c^{i}_{j}) \eqdef c^{i}_{j}$ is added to $c^i$ as $j^{th}$ element in the sum ~\eqref{eq:costsRestricted}.
-\end{itemize}
+  \section{A Theory of Costs}
+    Cimatti et al.\ introduced a theory of costs $\mathcal{C}$, which allows for modelling multiple problems with $\mathcal{T} \cup \mathcal{C}$-formulas.
+    \C{} is built up as follows:
+    \begin{itemize}
+      \item A set of $M$ variables $c^1,\ldots,c^M$. These are the output of the boolean cost functions $cost^1,\ldots,cost^M$.
+      \item A binary predicate \sf BC \rm (``bound cost'') s.t.\ $\BC{}(c^i,c) \eqdef (c^i \leq c)$ with $c^i$ being a cost variable and $c$ being an integer value.
+      \item A ternary predicate \IC{} (``incur cost'') s.t. $\IC{}(c^i,j,c^{i}_{j}) \eqdef c^{i}_{j}$ is added to $c^i$ as $j^{th}$ element in the sum ~\eqref{eq:costsRestricted}.
+    \end{itemize}
 
-This theory of costs allows for modelling domains which involve multiple costs $c^i$ and their constraints.
-At this point, we would like to introduce an example of an autonomous rover.
-Imagine a rover that can move around a $4\times4$ field of squares.
-A move from one square to a neighbouring square costs $20$ mAh.
-Now, we want to model this behaviour in boolean logic, so first we define some new boolean predicates:
+    \begin{figure}[!t]
+      \centering
+      \includegraphics[width = 0.8\textwidth]{images/roverField.pdf}
+      \caption{Example of an autonomous rover, which can move left, right, up and down on this $4 \times 4$ field. A move from one square to a neighbouring square costs $20$ mAh of battery.}
+      \label{fig:roverField}
+    \end{figure}
 
-\begin{align*}
-  \operatorname{\sf p \rm}(x,y,t) &\eqdef \text{At time point $t$, rover is at }(x,y) \\
-  \operatorname{\sf move \rm}(x,y,x',y',t) &\eqdef \text{At time point $t$, rover moves from $(x,y)$ to $(x',y')$} \\
-  \operatorname{\sf nextTo \rm}(x,y,x',y') &\eqdef (x,y) \text{ is next to $(x',y')$}
-\end{align*}
-\\
-Second, we define some formulas which model the behaviour of the rover:
-\begin{enumerate}
-  \item At every point in time, the rover is somewhere on the field:
-  \begin{equation*}
-    \varphi_{position} \eqdef \bigwedge\limits_{t \in \{0,\ldots,n\}} \left(\bigvee\limits_{x,y \in \{0,\ldots,3\}} \operatorname{\sf p \rm}\left(x,y,t\right)\right)
-  \end{equation*}
+    This theory of costs allows for modelling domains which involve multiple costs $c^i$ and their constraints.
+    At this point, we would like to introduce an example of an autonomous rover.
+    Imagine a rover that can move around a $4\times4$ field of squares (Fig.\ \ref{fig:roverField}).
+    A move from one square to a neighbouring square costs $20$ mAh.
+    Now, we want to model this behaviour in boolean logic, so first we define some new boolean predicates:
 
-  \item At every point in time, the rover is max.\ on one square:
-  \begin{equation*}
-    \varphi_{noSplitPos} \eqdef \bigwedge_{\substack{t \in \{0,\ldots,n\} \\ x,y \in \{0,\ldots,3\}}} \left(\operatorname{\sf p \rm}\left(x,y,t\right) \rightarrow \bigwedge_{\substack{x',y' \in \{0,\ldots,3\} \\ x' \neq x \wedge y' \neq y}} \neg \operatorname{\sf p \rm}\left(x',y',t\right)\right)
-  \end{equation*}
+    \begin{align*}
+      \operatorname{\sf p \rm}(x,y,t) &\eqdef \text{At time point $t$, rover is at }(x,y) \\
+      \operatorname{\sf move \rm}(x,y,x',y',t) &\eqdef \text{At time point $t$, rover moves from $(x,y)$ to $(x',y')$} \\
+      \operatorname{\sf nextTo \rm}(x,y,x',y') &\eqdef (x,y) \text{ is next to $(x',y')$}
+    \end{align*}
+    \\
+    Second, we define some formulas which model the behaviour of the rover:
+    \begin{itemize}
+      \item At every point in time, the rover is somewhere on the field:
+      \begin{equation*}
+        \varphi_{position} \eqdef \bigwedge\limits_{t \in \{0,\ldots,n\}} \left(\bigvee\limits_{x,y \in \{0,\ldots,3\}} \operatorname{\sf p \rm}\left(x,y,t\right)\right)
+      \end{equation*}
 
-  \item Between two time points, the rover either moves or stays on its current square:
-  \begin{equation*}
-    \varphi_{moveOrStay} \eqdef \bigwedge_{\substack{t \in \{0,\ldots,n-1\} \\ x,y,x',y' \in \{0,\ldots,3\} \\ x' \neq x \lor y' \neq y}} \left( \operatorname{\sf p \rm}\left(x,y,t\right) \land \operatorname{\sf p \rm}\left(x',y',t+1\right) \rightarrow \operatorname{\sf move \rm}\left(x,y,x',y',t\right)\right) 
-  \end{equation*}
+      \item At every point in time, the rover is max.\ on one square:
+      \begin{equation*}
+        \varphi_{noSplitPos} \eqdef \bigwedge_{\substack{t \in \{0,\ldots,n\} \\ x,y \in \{0,\ldots,3\}}} \left(\operatorname{\sf p \rm}\left(x,y,t\right) \rightarrow \bigwedge_{\substack{x',y' \in \{0,\ldots,3\} \\ x' \neq x \wedge y' \neq y}} \neg \operatorname{\sf p \rm}\left(x',y',t\right)\right)
+      \end{equation*}
 
-  \item The rover can only move to neighbouring field, i.e.\ neither jump nor move diagonally:
-  \begin{equation*}
-    \varphi_{validMove} \eqdef \bigwedge_{\substack{t \in \{0,\ldots,n-1\} \\ x,y,x',y' \in \{0,\ldots,3\}}} \left(\operatorname{\sf move \rm}\left(x,y,x',y',t\right) \rightarrow \operatorname{\sf nextTo \rm}\left(x,y,x',y'\right)\right)
-  \end{equation*}
+      \item Between two time points, the rover either moves or stays on its current square:
+      \begin{equation*}
+        \varphi_{move} \eqdef \bigwedge_{\substack{t \in \{0,\ldots,n-1\} \\ x,y,x',y' \in \{0,\ldots,3\} \\ x' \neq x \lor y' \neq y}} \left( \operatorname{\sf p \rm}\left(x,y,t\right) \land \operatorname{\sf p \rm}\left(x',y',t+1\right) \rightarrow \operatorname{\sf move \rm}\left(x,y,x',y',t\right)\right) 
+      \end{equation*}
 
-  \item Moving one square costs $20$ mAh of energy:
-  \begin{equation*}
-    \varphi_{batteryCost} \eqdef \bigwedge_{\substack{t \in \{0,\ldots,n-1\} \\ x,y,x',y' \in \{0,\ldots,3\}}} \left(\operatorname{\sf move \rm}\left(x,y,x',y',t\right) \rightarrow \IC{}\left(battery,t,20\right)\right)
-  \end{equation*}
+      \item The rover can only move to neighbouring field, i.e.\ neither jump nor move diagonally:
+      \begin{equation*}
+        \varphi_{validMove} \eqdef \bigwedge_{\substack{t \in \{0,\ldots,n-1\} \\ x,y,x',y' \in \{0,\ldots,3\}}} \left(\operatorname{\sf move \rm}\left(x,y,x',y',t\right) \rightarrow \operatorname{\sf nextTo \rm}\left(x,y,x',y'\right)\right)
+      \end{equation*}
 
-\end{enumerate}
+      \item Moving one square costs $20$ mAh of energy:
+      \begin{equation*}
+        \varphi_{batteryCost} \eqdef \bigwedge_{\substack{t \in \{0,\ldots,n-1\} \\ x,y,x',y' \in \{0,\ldots,3\}}} \left(\operatorname{\sf move \rm}\left(x,y,x',y',t\right) \rightarrow \operatorname{\sf IC \rm}\left(battery,t,20\right)\right)
+      \end{equation*}
+    \\
+    \end{itemize}
+    Using this example, we can model different constraints, which we want to impose. For example, can the rover move from $(0,0)$ to $(3,2)$ in 5 steps, while not using more than $100$ mAh of battery? This can be expressed with the following formula:
+    \begin{equation*}
+      \begin{split}
+        \varphi_{ex1} \eqdef \varphi_{position} &\land \varphi_{noSplitPos} \land \varphi_{move} \land \varphi_{validMove} \land \varphi_{batteryCost} \\ 
+        &\land \operatorname{\sf p \rm}(0,0,0) \land \operatorname{\sf p \rm}(3,2,5) \land \operatorname{\sf BC \rm}(battery, 100)
+      \end{split}
+    \end{equation*}
 
+    It is fairly intuitive that the above formula is satisfiable, one possible solution being the path depicted in figure \ref{fig:roverField}. However, the problem could be extended to be more complex, e.g.\ with different battery costs for each square on a $1000 \times 1000$ field, which would make the problem a lot less easier for a human to solve. Therefore, Cimatti et al.\ introduced a general decision procedure for the theory of costs, a so-called \C{}-solver. The following chapter introduces the \C{}-solver, and explains the use of the individual steps with the aid of the rover example.
 
-\bibliographystyle{amsplain}
-\bibliography{references}
+  \section{\C{}-solver: A theory of costs solver}
+    A \C{}-solver receives a truth assignment $\mu \eqdef \mu_{\mathcal{B}} \cup \mu_{\mathcal{T}} \cup \mu_{\mathcal{C}}$, but only selects the \C{}-relevant part. $\mu_{\mathcal{B}}$ is a set of boolean literals, $\mu_{\mathcal{T}}$ a set of \T{}-literals and $\mu_{\mathcal{C}} \eqdef \bigcup_{i=1}^M \mu_{\mathcal{C}}^i$ is a set of \C{}-literals, s.t.\ for every $i$:
+    \begin{equation*}
+      \begin{split}
+        \mu_{\mathcal{C}^i} \eqdef \{&\operatorname{\sf BC \rm}(c^i,\operatorname{\sf ub \rm}_{(k)}^{i})\ |\ k \in \{1,...,K_i\}\} \cup \{\neg \operatorname{\sf BC \rm}(c^i,\operatorname{\sf lb \rm}_{(m)}^{i} - 1)\ |\ m \in \{1,...,M_i\}\} \\
+        \cup \ \{&\operatorname{\sf IC \rm}(c^i,j,c^i_j)\ |\ j \in J^{i+}\} \cup \{\neg \operatorname{\sf IC \rm}(c^i,j,c^i_j)\ |\ j \in J^{i-}\}
+      \end{split}       
+    \end{equation*}
+    where $\operatorname{\sf ub \rm}_{(1)}^{i},\ldots,\operatorname{\sf ub \rm}_{(K^i)}^{i}$ and $\operatorname{\sf lb \rm}_{(1)}^{i},\ldots,\operatorname{\sf lb \rm}_{(K^i)}^{i}$ are positive integer upper and lower bounds respectively. $J^{i+}$ and $J^{i-}$ are sets of indices s.t.\ $J^{i+} \cap J^{i-} = \emptyset$ and $J^{i+} \cup J^{i-} \subseteq \{1,\ldots,N_i\}$. Additionally let
+    \begin{equation*}
+      \begin{split}
+        \operatorname{\sf lb \rm}_{max}^i &\eqdef \operatorname{\sf max \rm}(\operatorname{\sf lb \rm}_{(1)}^i,\ldots,\operatorname{\sf lb \rm}_{(M_i)}^i) \\
+        \operatorname{\sf ub \rm}_{min}^i &\eqdef \operatorname{\sf min \rm}(\operatorname{\sf ub \rm}_{(1)}^i,\ldots,\operatorname{\sf ub \rm}_{(K_i)}^i)
+      \end{split}
+    \end{equation*}
+    So the \C{}-solver takes the \C{}-relevant part $\mu_{\mathcal{C}} \eqdef \bigcup_{i=1}^M \mu_{\mathcal{C}}^i$ and for every $i$, checks whether $\mu^{i}_{\mathcal{C}}$ is \C{}-satisfiable. This is performed by the following algorithm:
+
+  \bibliographystyle{amsplain}
+  \bibliography{references}
 
 \end{document}
 
