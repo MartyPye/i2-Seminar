@@ -18,6 +18,9 @@
 \usepackage{amsfonts}
 \usepackage{amsmath}% 
 \usepackage{calc}%     needed for the width/height calculations
+%resume enumerations
+\usepackage{enumitem}
+
 
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{lemma}[theorem]{Lemma}
@@ -207,11 +210,62 @@
     \begin{equation*}
       \begin{split}
         \operatorname{\sf lb \rm}_{max}^i &\eqdef \operatorname{\sf max \rm}(\operatorname{\sf lb \rm}_{(1)}^i,\ldots,\operatorname{\sf lb \rm}_{(M_i)}^i) \\
-        \operatorname{\sf ub \rm}_{min}^i &\eqdef \operatorname{\sf min \rm}(\operatorname{\sf ub \rm}_{(1)}^i,\ldots,\operatorname{\sf ub \rm}_{(K_i)}^i)
+        \operatorname{\sf ub \rm}_{min}^i &\eqdef \operatorname{\sf min \rm}(\operatorname{\sf ub \rm}_{(1)}^i,\ldots,\operatorname{\sf ub \rm}_{(K_i)}^i) \\
+        \operatorname{\sf CostOf_i \rm}(\mu) &\eqdef \sum\limits_{j \in J^{i+}}c^i_j \\
+        \operatorname{\sf MCostOf_i \rm}(\mu) &\eqdef \sum\limits_{j=1}^{N_i}c^i_j - \sum\limits_{j \in J^{i-}} c^i_j  
       \end{split}
     \end{equation*}
     So the \C{}-solver takes the \C{}-relevant part $\mu_{\mathcal{C}} \eqdef \bigcup_{i=1}^M \mu_{\mathcal{C}}^i$ and for every $i$, checks whether $\mu^{i}_{\mathcal{C}}$ is \C{}-satisfiable. This is performed by the following algorithm:
 
+
+    \begin{enumerate}
+      \item If $\operatorname{\sf lb \rm}_{max}^i > \operatorname{\sf ub \rm}_{min}^i$ then return \unsat{} and the \C{}-conflict clause
+      \begin{equation*}
+        \operatorname{\sf BC \rm}(c^i, \operatorname{\sf lb \rm}_{max}^i - 1) \vee \neg \operatorname{\sf BC \rm}(c^i, \operatorname{\sf ub \rm}_{min}^i)
+      \end{equation*} \\
+
+      \item If $\operatorname{\sf CostOf_i \rm}(\mu_{\mathcal{C}}^i) > \operatorname{\sf ub \rm}_{min}^i$ then return \unsat{} and the \C{}-conflict clause
+      \begin{equation*}
+        \neg \operatorname{\sf BC \rm}(c^i, \operatorname{\sf ub \rm}_{min}^i) \vee \bigvee\limits_{j \in K^{i+}} \neg \operatorname{\sf IC \rm}(c^i, j, c^i_j)
+      \end{equation*}
+      $K^{i+}$ being a minimal subset of $J^{i+}$ s.t.\ $\sum\limits_{j \in K^{i+}} c^i_j > \operatorname{\sf ub \rm}_{min}^i$. \\\\
+
+      \item If $\operatorname{\sf MCostOf_i \rm}(\mu_{\mathcal{C}}^i) < \operatorname{\sf lb \rm}_{max}^i$ then return \unsat{} and the \C{}-conflict clause
+      \begin{equation*}
+        \operatorname{\sf BC \rm}(c^i, \operatorname{\sf lb \rm}_{max}^i - 1) \vee \bigvee\limits_{j \in K^{i-}} \operatorname{\sf IC \rm}(c^i, j, c^i_j)
+      \end{equation*}
+      $K^{i-}$ being a minimal subset of $J^{i-}$ s.t.\ $\sum\limits_{j \in K^{i-}} c^i_j < \operatorname{\sf lb \rm}_{max}^i$. \\\\
+
+    \end{enumerate}
+    If none of the conditions $(1)$, $(2)$ or $(3)$ are fulfilled, then the \C{}-solver returns \sat{} and $\operatorname{\sf CostOf_i \rm}(\mu_{\mathcal{C}}^i)$ for every i. Also, the \C{}-solver can perform theory propagation as follows:
+    \begin{enumerate}[resume]
+      \item Every unassigned literal $\operatorname{\sf BC \rm}(c^i, \operatorname{\sf ub \rm}_{(r)}^i)$ with $\operatorname{\sf ub \rm}_{(r)}^i) \geq \operatorname{\sf ub \rm}_{min}^i)$ and every unassigned literal $\neg \operatorname{\sf BC \rm}(c^i, \operatorname{\sf lb \rm}_{(s)}^i - 1)$ with $\operatorname{\sf ub \rm}_{(s)}^i) \leq \operatorname{\sf lb \rm}_{max}^i)$ can be \C{}-deduced, i.e.\ added to the truth assignment:
+      \begin{equation*}
+        \begin{split}
+          \mu_{\mathcal{C}}^i &\cup \{\operatorname{\sf BC \rm}(c^i, \operatorname{\sf ub \rm}_{(r)}^i)\} \\
+          \mu_{\mathcal{C}}^i &\cup \{\neg \operatorname{\sf BC \rm}(c^i, \operatorname{\sf lb \rm}_{(s)}^{i} - 1)\}
+        \end{split}
+      \end{equation*}
+      \item If $\operatorname{\sf CostOf_i \rm}(\mu) \leq \operatorname{\sf ub \rm}_{min}^i$ but $\left(\mu_{\mathcal{C}^i} \cup \{\operatorname{\sf IC \rm}(c^i, j, c^i_j)\}\right) > \operatorname{\sf ub \rm}_{min}^i$ for any $j \not\in (J^{i+} \cup J^{i-})$, then $\neg \operatorname{\sf IC \rm}(c^i, j, c^i_j)$ can be \C{}-deduced and added to the truth assignment: $\mu_{\mathcal{C}}^i \cup \{\operatorname{\sf IC \rm}(c^i, j, c^i_j)\}$.
+      \item If $\operatorname{\sf MCostOf_i \rm}(\mu) \geq \operatorname{\sf lb \rm}_{max}^i)$ but $\left(\mu_{\mathcal{C}^i} \cup \{\neg \operatorname{\sf IC \rm}(c^i, j, c^i_j)\}\right) < \operatorname{\sf lb \rm}_{max}^i$ for any $j \not\in (J^{i+} \cup J^{i-})$, then $\operatorname{\sf IC \rm}(c^i, j, c^i_j)$ can be \C{}-deduced and added to the truth assignment: $\mu_{\mathcal{C}}^i \cup \{\neg \operatorname{\sf IC \rm}(c^i, j, c^i_j)\}$.
+    \end{enumerate}
+
+    In the following paragraphs, the individual steps of the \C{}-solver are explained with regards to the autonomous rover example described above. \\
+
+    Step (1) is pretty straight forward. If the highest lower bound is larger than the lowest upper bound for a certain cost, then obviously, the formula is not satisfiable. In the rover example, this would be the case for e.g.\ $\varphi_{ex1} \land \neg \operatorname{\sf BC \rm}(battery,110)$. The rover can't simultaneously use at least $110$ mAh and at most $100$ mAh of battery. This is precisely what the conflict clause then expresses. \\
+
+    Step (2) describes that for the current truth assignment, the accumulated cost for one cost variable may not exceed the lowest upper bound. In $\varphi_{ex1}$ for example, the solver checks wether all the currently incurred costs ($20$ mAh for each step) sum up to more than $100$. If yes, then the solver specifies that either the lowest upper bound cannot be $100$, or at one of the previous steps, the rover wasn't allowed to incur the costs it did. \\
+
+    Step (3) is analogous to step (2), just for the highest lower bound, i.e.\ the maximal accumulatable cost for the current assignment must exceed the highest lower bound, otherwise the formula is not satisfiable. \\
+
+    Step (4) is relevant for early pruning. An important feature of this solver is that it can also take partial truth assignments. In order to show how this step can be useful, we have to complicate the $\varphi_{ex1}$ example a bit. Let's assume we have the formula 
+    \begin{equation*}
+      \varphi_{ex1} \land (\psi_1 \lor \operatorname{\sf BC \rm}(battery, 80) \lor \psi_2)
+    \end{equation*}
+    and the SAT-solver has already decided that $\psi_1$ and $\psi_2$ need to be false. Therefore $\operatorname{\sf BC \rm}(battery, 80)$ has to be true, and the solver can deduce that the unassigned literal $\operatorname{\sf BC \rm}(battery, 100)$ is automatically also true, and is then added to the truth assignment (\C{}-propagated). This makes the solving process more efficient. \\
+
+    Step (5) and (6) basically do the same thing for upper and lower bound respectively. Assuming the SAT solver has currently chosen an assignment which makes the rover move down from $(0,0)$ all the way to the corner, and then right until $(2,3)$. At this point in time, $\operatorname{\sf CostOf_i \rm}(\mu)$ is still $100$, but the cost incurred for the next step exceeds the $100$ bound. Therefore, the solver can deduce and propagate that this cost may not be incurred. The SAT-solver will then deduce that due to $\varphi_{batteryCost}$, the rover may not make that move, and has to find a different path.
+   
   \bibliographystyle{amsplain}
   \bibliography{references}
 
