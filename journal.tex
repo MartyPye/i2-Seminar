@@ -55,8 +55,6 @@
 \def\TSolver{$\mathcal{T}$-\emph{solver}}
 \def\sat{\texttt{SAT}}
 \def\unsat{\texttt{UNSAT}}
-\def\BC{\sf BC \rm}
-\def\IC{\sf IC \rm}
 % \newcommand{\eqdef}{\overset{\mathrm{def}}{=\joinrel=}}
 
 
@@ -77,21 +75,30 @@
   \email[Marty Pye]{marty.pye@rwth-aachen.de}
 
   \begin{abstract}
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam diam sapien, egestas at velit in, tempor malesuada turpis. Aenean eget rutrum sapien. Proin a blandit justo. Nulla fermentum placerat lacus eu tempus. Quisque nec orci eros. Nullam tempor ut lectus elementum blandit. In sed velit quis massa viverra pellentesque. Donec bibendum nibh molestie, volutpat lectus sed, eleifend nibh. Donec nec tellus justo. Vestibulum nec massa ac sapien porta ultrices.
-
-    Mauris non consectetur quam. Suspendisse in orci consectetur, dictum erat nec, varius ante. Vivamus porta purus eget dictum dictum. Vivamus quis sem risus. Donec dictum tortor et odio tincidunt, non tincidunt nunc venenatis. Fusce nec lacus vel odio semper venenatis a sodales elit. Morbi tincidunt sit amet eros sed pharetra. Pellentesque varius pharetra ultrices. Pellentesque quam diam, blandit vel gravida in, vestibulum vel sapien. Quisque quam nibh, accumsan nec est placerat, eleifend vestibulum nulla. Cras a dapibus sapien, vel consequat urna. Cras bibendum fringilla mi dapibus tincidunt. Ut suscipit elit et risus porta, faucibus blandit ligula aliquet.
+    This thesis presents an overview of the modelling and evaluation of a theory of costs \C{} which extends Satisfiability Modulo Theories (SMT). This theory of costs allows modelling of domains which involve multiple cost functions and reasoning about resource consumption. This thesis presents a decision procedure by Cimatti et al.\ and explains this solver through the aid of a concrete example. How the theory of costs can help in tackling problems of optimisation modulo theories is also explained.
+    \\\\
+    An evaluation of the proposed approach in comparison to other solvers in the respective field is presented, and the results are discussed. The results show that the presented decision procedure for SMT(\C{} $\cup$ \T{}) problems is a competitive solution, and even outperforms existing solvers in certain cases.
   \end{abstract}
 
   \maketitle
 
   \section{Introduction}
+
+  Very often, verification problems require modeling and constraining of resource consumption. This paper elaborates on an extension of SMT, a theory of costs, introduced by Cimatti et al.\ \cite{Cimatti10}. The theory of costs can contain multiple cost functions, which can have upper and lower bounds, and depend on other boolean functions. The decision procedure they present has all the features required for the integration in the lazy SMT schema. \\
+  
+  Based on the theory of costs, the problem of Optimisation Modulo Theories can be handled, either by a linear approach or by a binary approach. The linear approach tightens the admissibility range based on the best valued solution so far, where as the binary search approach bisects the admissible interval.
+  Implementations of the proposed approaches are evaluated in comparison to other existing solvers, and the results are discussed. The results show that both approaches are pretty effective.\\
+  
+  This thesis is structured as follows: In section \ref{smtSolving} SMT solving is briefly explained, and in section \ref{theoryOfCosts}, the theory of costs is introduced. The description of how a decision procedure for the theory of costs works is presented in section \ref{CSolver}, and illustrated by the use of a concrete example. Finally, the solver is evaluated in section \ref{evaluation} with regards to existing solvers.
+
   \section{SMT Solving}
+    \label{smtSolving}
     The \emph{Satisfiability Modulo Theories} (SMT($\mathcal{T}$)) problem is a decision problem for logic formulas under the background of a Theory $\mathcal{T}$, and can be seen as a constraint satisfaction problem.
     A tool able to decide the satisfiability of sets of ground atomic formulas and their negations is referred to as a $\mathcal{T}$-\emph{solver}.
     If the input set of \T{}-literals $\mu$ is satisfiable under \T{}, then the \TSolver{} returns \sat{}.
     Additionally, the \TSolver{} can return a so-called \T{}-deduction clause. This can be used in early pruning, where the \T{}-deduction clause can be used in backjumping and learning.
     If the input set of \T{}-literals is not satisfiable under \T{}, then the \TSolver{} returns \unsat{} and the conflict clause consisting of the subset of \T{}-literals in $\mu$ which was found \T{}-unsatisfiable.
-
+    \\\\
     A tool which is able to solve an SMT($\mathcal{T}$) problem is further referred to as an SMT($\mathcal{T}$)-solver.
     In a lazy SMT(\T{})-solver, the truth assignments for $\varphi$ are checked for \T{}-satisfiability.
     Usually, this is performed by a modified version of the DPLL algorithm.
@@ -100,6 +107,7 @@
     If not, then the \TSolver{} passes the \T{}-conflict clause $\neg\eta$ back to the learning mechanism of the DPLL algorithm. For more information on how lazy SMT(\T{}) solving works, please refer to \cite{Sebastiani07}.
 
   \section{Satisfiability Modulo the Theory of Costs}
+  \label{theoryOfCosts}
     Cimatti et al.\ extend the SMT framework by adding a possibility of modelling cost functions \cite{Cimatti10}.
     An SMT(\T{}) \emph{cost problem} is a pair $\langle \varphi, costs \rangle$, where $costs \eqdef \{cost^{i}\}^{M}_{i=1}$.
     $\varphi$ is a boolean formula over ground \T{}-atoms and atoms of the form ($cost^{i} \leq c$), $c$ being some integer value.
@@ -123,8 +131,8 @@
     	cost^{i} = \sum\limits_{j=1}^{N_{i}} ite(A^{i}_{j},c^{i}_{j},0)
     \end{equation}
     where $A_{j}^{i}$ is a boolean literal and $0 < c^{i}_{j} \leq c^{i}_{j+1}$.
-    Passing from ~\eqref{eq:costsGeneral} to ~\eqref{eq:costsRestricted} is straightforward and possible in linear time. (SHOULD I ADD THE PROOF HERE?)
-
+    Passing from ~\eqref{eq:costsGeneral} to ~\eqref{eq:costsRestricted} is straightforward and possible in linear time. (SHOULD I ADD THE PROOF HERE?) \\
+    
     At this point it is important to note that ~\eqref{eq:costsRestricted} can be encoded in the theory of linear arithmetic over integers ($\mathcal{LA}(\mathbb{Z})$) and therefore any $\langle \varphi, costs \rangle$ problem into the following ground \T{}$\cup \mathcal{LA}(\mathbb{Z})$-formula.
     \begin{equation}
     	\label{eq:encodingSMTIntoLA}
@@ -137,8 +145,8 @@
     \C{} is built up as follows:
     \begin{itemize}
       \item A set of $M$ variables $c^1,\ldots,c^M$. These are the output of the boolean cost functions $cost^1,\ldots,cost^M$.
-      \item A binary predicate \sf BC \rm (``bound cost'') s.t.\ $\BC{}(c^i,c) \eqdef (c^i \leq c)$ with $c^i$ being a cost variable and $c$ being an integer value.
-      \item A ternary predicate \IC{} (``incur cost'') s.t. $\IC{}(c^i,j,c^{i}_{j}) \eqdef c^{i}_{j}$ is added to $c^i$ as $j^{th}$ element in the sum ~\eqref{eq:costsRestricted}.
+      \item A binary predicate \sf BC \rm (``bound cost'') s.t.\ $\operatorname{\sf BC \rm}(c^i,c) \eqdef (c^i \leq c)$ with $c^i$ being a cost variable and $c$ being an integer value.
+      \item A ternary predicate $\operatorname{\sf IC \rm}$ (``incur cost'') s.t. $\operatorname{\sf IC \rm}(c^i,j,c^{i}_{j}) \eqdef c^{i}_{j}$ is added to $c^i$ as $j^{th}$ element in the sum ~\eqref{eq:costsRestricted}.
     \end{itemize}
 
     \begin{figure}[!t]
@@ -195,10 +203,11 @@
         &\land \operatorname{\sf p \rm}(0,0,0) \land \operatorname{\sf p \rm}(3,2,5) \land \operatorname{\sf BC \rm}(battery, 100)
       \end{split}
     \end{equation*}
-
+    
     It is fairly intuitive that the above formula is satisfiable, one possible solution being the path depicted in figure \ref{fig:roverField}. However, the problem could be extended to be more complex, e.g.\ with different battery costs for each square on a $1000 \times 1000$ field, which would make the problem a lot less easier for a human to solve. Therefore, Cimatti et al.\ introduced a general decision procedure for the theory of costs, a so-called \C{}-solver. The following chapter introduces the \C{}-solver, and explains the use of the individual steps with the aid of the rover example.
 
   \section{\C{}-solver: A theory of costs solver}
+    \label{CSolver}
     A \C{}-solver receives a truth assignment $\mu \eqdef \mu_{\mathcal{B}} \cup \mu_{\mathcal{T}} \cup \mu_{\mathcal{C}}$, but only selects the \C{}-relevant part. $\mu_{\mathcal{B}}$ is a set of boolean literals, $\mu_{\mathcal{T}}$ a set of \T{}-literals and $\mu_{\mathcal{C}} \eqdef \bigcup_{i=1}^M \mu_{\mathcal{C}}^i$ is a set of \C{}-literals, s.t.\ for every $i$:
     \begin{equation*}
       \begin{split}
@@ -264,7 +273,47 @@
     \end{equation*}
     and the SAT-solver has already decided that $\psi_1$ and $\psi_2$ need to be false. Therefore $\operatorname{\sf BC \rm}(battery, 80)$ has to be true, and the solver can deduce that the unassigned literal $\operatorname{\sf BC \rm}(battery, 100)$ is automatically also true, and is then added to the truth assignment (\C{}-propagated). This makes the solving process more efficient. \\
 
-    Step (5) and (6) basically do the same thing for upper and lower bound respectively. Assuming the SAT solver has currently chosen an assignment which makes the rover move down from $(0,0)$ all the way to the corner, and then right until $(2,3)$. At this point in time, $\operatorname{\sf CostOf_i \rm}(\mu)$ is still $100$, but the cost incurred for the next step exceeds the $100$ bound. Therefore, the solver can deduce and propagate that this cost may not be incurred. The SAT-solver will then deduce that due to $\varphi_{batteryCost}$, the rover may not make that move, and has to find a different path.
+    Step (5) and (6) basically do the same thing for upper and lower bound respectively. Assuming the SAT solver has currently chosen an assignment which makes the rover move down from $(0,0)$ all the way to the corner, and then right until $(2,3)$. At this point in time, $\operatorname{\sf CostOf_i \rm}(\mu)$ is still $100$, but the cost incurred for the next step exceeds the $100$ bound. Therefore, the solver can deduce and propagate that this cost may not be incurred. The SAT-solver will then deduce that due to $\varphi_{batteryCost}$, the rover may not make that move, and has to find a different path. \\
+
+    If the problem also had an underlying theory, it could be solved by an SMT(\T{} $\cup$ \C{})-solver. A DPLL algorithm enumerates truth assignments and both the \C{}-solver and the \T{}-solver can be invoked on each of them. If both solvers return \sat{}, then the problem is satisfiable. If one of them returns \unsat{} and a conflict clause, then that conflict clause can be used by the SMT(\T{} $\cup$ \C{})-solver for backjumping and learning
+
+  \section{Optimisation Modulo Theories}
+  \label{optimisationModuloTheories}
+    An SMT(\T{} $\cup$ \C{})-solver can also solve \emph{cost decision} and \emph{cost minimisation} problems.
+
+    A \textbf{cost decision problem} is a triple $\langle \varphi, costs, bounds \rangle$, where $\varphi$ and $costs$ are defined as in section \ref{theoryOfCosts}, and $bounds \eqdef \{\langle \operatorname{\sf lb \rm}^i, \operatorname{\sf ub \rm}^i\rangle\}^M_{i = 1}$ with $\operatorname{\sf ub \rm}^i$ and $\operatorname{\sf lb \rm}^i$ being integer values. The decision problem can be encoded into SMT(\T{} $\cup$ \C{}):
+    \begin{equation*}
+      \varphi_{\mathcal{C}} \eqdef \land \bigwedge\limits_{i = 1}^M \left( \operatorname{\sf BC \rm}\left(c^i, \operatorname{\sf ub \rm}^i \right) \land \neg \operatorname{\sf BC \rm}\left(c^i, \operatorname{\sf lb \rm}^i - 1\right) \land \bigwedge\limits_{j = 1}^M \left( A^i_j \leftrightarrow \operatorname{\sf IC \rm}\left( c^i, j, c^i_j \right)\right) \right)
+    \end{equation*}
+    \\
+    A \textbf{cost minimization problem} is a triple $\langle \varphi, costs, bounds \rangle$ with $\varphi$, $costs$ and $bounds$ defined as above. The problem involves finding a solution where the value of $cost^i$ is minimal for a given $i$. Cimatti et al.\ describe two approaches to find the minimal cost, one based on linear search, and the other based on binary search. For a description of the algorithms, please refer to \cite{Cimatti10}.
+    \\\\
+    The following section evaluates Cimatti's solver for different problems in comparison to existing solvers which can solve the same type of problems.
+
+  \section{Evaluation}
+    \label{evaluation}
+    \begin{table}
+      \label{tab:performance}
+      \includegraphics[width=0.8\linewidth]{images/performance.png}
+      \caption{To be replaced with simpler table. The table shows the mean completion time of the different solvers and the number of instances where an optimal solution was found. The binary approach outperforms both the Yices SMT solver and the linear approach.}
+    \end{table}
+
+    Cimatti et al.\ evaluated the performance of their solver on problems which use a combination of \C{} and another theory \T{}. First, they evaluated their linear and binary approach in comparison to an SMT solver by Dutertre et al.\ \cite{yices06} on instances of the weighted Max-SMT and weighted partial Max-SMT problem. The \textbf{weighted Max-SMT} problem can be described as follows: For a given set of pairs $\{\left(C_1, c_1\right), \ldots, \left(C_m, c_m\right)\}$ where $C_i$ is an SMT clause weighted with cost $c_i$, find an assignment $\mu$ which maximises the sum $\sum_{i\ s.t.\ \mu \models C_i} c_i$ \cite{Nieuwenhuis06}. The \textbf{weighted partial Max-SMT} problem differentiates between hard and soft clauses. Only soft clauses are weighted with a cost. A solution is only valid iff it satisfies all hard clauses \cite{Robinson10}. Cimatti et al.\ ran the respective solvers on 200 instances of weighted (partial) Max-SMT problems, and compared number of instances where optimal solutions were found as well as completion time. The results showed that their binary approach outperformed the linear approach, finding 56 instances with optimal solutions as opposed to 23, and with a mean completion time of 87ms as opposed to 207ms. The exact results are listed in table 1.
+    \\\\
+    They also performed comparisons with Max-SAT solvers from the 2009 Max-SAT evaluation\footnote{http://www.maxsat.udl.cat/09/}. The results showed that for pure Max-SAT, neither their linear nor binary approach was competitive in finding optimal solutions. However, for weighted Max-SAT, the performance is noticeably better, and for weighted partial Max-SAT, their binary search approach is significantly better than the winner of the 2009 Max-SAT evaluation. The detailed results can be found in \cite{Cimatti10}. 
+
+  \section{Conclusion}
+    \label{conclusion}
+    This thesis provided an overview over a method of handling the problem of Satisfiability Modulo the Theory of Costs. The theory behind dealing with costs is introduced and explained with the help of a concrete example.
+    The introduced SMT(\C{})-solver is an effective framework for solving optimisation problems.
+    The solver and two approaches for optimisation problems, linear search and binary search were evaluated. 
+    Overall, the binary approach for the cost minimisation problem seems to find more optimal solutions than the linear approach.
+    However, both the binary and linear approach find some solution for the same number of instances, as the first iteration of both algorithms is the same.
+    The binary solver even outperforms the winners of the most recent competition in a couple of categories. We can conclude that Cimatti's Satisfiability Modulo the Theory of Costs can handle expressive problems with multiple cost functions in an efficient way.
+
+
+
+    
    
   \bibliographystyle{amsplain}
   \bibliography{references}
